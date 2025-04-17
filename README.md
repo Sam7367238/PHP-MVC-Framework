@@ -17,7 +17,7 @@ We are initializing a new session every time we visit a different page, because 
 We run the App class, this is like our router, it will load the requested controller and it can handle any errors or edge-cases.
 
 ### Handling Requests
-When we take a look at Request.php inside App/Core, there are 5 **static** methods we need to know:
+When we take a look at Request.php inside App/Core, there are 4 **static** methods we need to know:
 - data() will return POST or $_FILES data.
 - query() will return GET data.
 - isPost() & isGet() checks if the request method is post. And same for isGet().
