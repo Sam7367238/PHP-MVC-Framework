@@ -15,8 +15,8 @@ class Home extends Controller {
         $data = [];
 
         if (Request::isPost()) {
-            $data["name"] = $this -> request -> data("name");
-            $data["email"] = $this -> request -> data("email");
+            $data["name"] = $this -> request -> data("name", true, "string");
+            $data["email"] = $this -> request -> data("email", true, "string");
         }
 
         $this -> view("welcome", $data);

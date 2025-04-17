@@ -1,5 +1,7 @@
 <?php
 
+use function PHPSTORM_META\type;
+
 class Request {
     public $data = [];
     public $query = [];
@@ -19,12 +21,36 @@ class Request {
         return array_merge($files, $post);
     }
 
-    public function data($key) {
-        return $this -> data[$key] ?? null;
+    public function data($key, $post, $type = null) {
+        if (!isset($this -> data[$key])) {
+            return null;
+        }
+
+        if (!$post) {
+            return $this -> data[$key];
+        }
+
+        if ($type == "string") {
+            return filter_var($this -> data[$key], FILTER_SANITIZE_SPECIAL_CHARS);
+        }
+
+        if ($type == "int") {
+            return filter_var($this -> data[$key], FILTER_SANITIZE_NUMBER_INT);
+        }
     }
 
-    public function query($key) {
-        return $this -> query[$key] ?? null;
+    public function query($key, $type) {
+        if (!isset($this -> query[$key])) {
+            return null;
+        }
+
+        if ($type == "int") {
+            return filter_var($this -> query[$key], FILTER_SANITIZE_NUMBER_INT);
+        }
+
+        if ($type == "string") {
+            return filter_var($this -> query[$key], FILTER_SANITIZE_SPECIAL_CHARS);
+        }
     }
 
     public static function isPost() {
