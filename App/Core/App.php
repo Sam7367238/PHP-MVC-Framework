@@ -3,43 +3,64 @@
 class App {
     private static $controller = "Home";
     private static $method = "index";
-    private static $params;
+    private static $params = [];
 
-    private static function splitURL() {
-        $URL = $_GET["url"] ?? "home";
-        $URL = explode('/', filter_var(trim($URL, '/')), FILTER_SANITIZE_URL);
-        return $URL;
+    private static function splitURL()  {
+        $url = $_GET["url"] ?? "home";
+        $url = trim($url, '/');
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        return explode('/', $url);
     }
 
     public static function run() {
-        $URL = self::splitURL();
-    
-        $filename = "../App/Controllers/" . ucfirst($URL[0]) . ".php";
-        if (file_exists($filename)) {
-            require($filename);
-            self::$controller = ucfirst($URL[0]);
-            unset($URL[0]);
-        } else {
-            return Response::error("NotFound", 404);
-        }
-    
-        if (!empty($URL[1]) && method_exists(self::$controller, $URL[1]) && $URL[1] !== "__construct") {
-            self::$method = $URL[1];
-            unset($URL[1]);
-        } else if (!empty($URL[1]) && $URL[1] === "__construct") {
-            return Response::error("BadRequest", 400);
-        }
-    
-        self::$params = array_values($URL);
+        $urlParts = self::splitURL();
 
-        $controller = new self::$controller(new Request(), self::$method);
-    
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $urlParts[0])) {
+            Response::error("BadRequest", 400);
+            return;
+        }
+
+        $controllerName = ucfirst($urlParts[0]);
+        $filename = "../App/Controllers/" . $controllerName . ".php";
+
+        if (!file_exists($filename)) {
+            Response::error("NotFound", 404);
+            return;
+        }
+
+        require($filename);
+
+        if (!class_exists($controllerName)) {
+            Response::error("NotFound", 404);
+            return;
+        }
+
+        self::$controller = $controllerName;
+        unset($urlParts[0]);
+
+        $method = $urlParts[1] ?? "index";
+
+        if ($method === "__construct" || !preg_match('/^[a-zA-Z0-9_]+$/', $method)) {
+            Response::error("BadRequest", 400);
+            return;
+        }
+
+        if (method_exists(self::$controller, $method)) {
+            self::$method = $method;
+            unset($urlParts[1]);
+        } elseif (!empty($urlParts[1])) {
+            Response::error("NotFound", 404);
+            return;
+        }
+
+        self::$params = array_values($urlParts);
+
+        $controllerInstance = new self::$controller(new Request(), self::$method);
+
         try {
-            call_user_func_array([$controller, self::$method], self::$params);
-        } catch (ArgumentCountError) {
-            return Response::error("BadRequest", 400);
-        } catch (TypeError) {
-            return Response::error("BadRequest", 400);
+            call_user_func_array([$controllerInstance, self::$method], self::$params);
+        } catch (ArgumentCountError | TypeError) {
+            Response::error("BadRequest", 400);
         }
     }
 }
