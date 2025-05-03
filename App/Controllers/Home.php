@@ -15,8 +15,8 @@ class Home extends Controller {
         $data = [];
 
         if (Request::isPost()) {
-            $data["name"] = $this -> request -> data("name", true, "string");
-            $data["email"] = $this -> request -> data("email", true, "string");
+            $data["name"] = $this -> request -> data("name", true, FILTER_SANITIZE_SPECIAL_CHARS);
+            $data["email"] = $this -> request -> data("email", true, FILTER_SANITIZE_SPECIAL_CHARS);
         }
 
         $this -> view("welcome", $data);
