@@ -1,9 +1,7 @@
 <?php
 
 class Home extends Controller {
-    private static $middleware = [
-        "index" => ["Authenticated"]
-    ];
+    private static $middleware = [];
     private $primaryModel;
 
     public function __construct(?Request $request = null, $method = null) {
