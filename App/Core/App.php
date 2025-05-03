@@ -1,24 +1,19 @@
 <?php
 
 class App {
-    private static $controller = "Home";
-    private static $method = "index";
-    private static $params = [];
+    public $controller = "Home";
+    public $method = "index";
+    public $params = [];
 
-    private static function splitURL()  {
+    public function splitURL()  {
         $url = $_GET["url"] ?? "home";
         $url = trim($url, '/');
         $url = filter_var($url, FILTER_SANITIZE_URL);
         return explode('/', $url);
     }
 
-    public static function run() {
-        $urlParts = self::splitURL();
-
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $urlParts[0])) {
-            Response::error("BadRequest", 400);
-            return;
-        }
+    public function run() {
+        $urlParts = $this -> splitURL();
 
         $controllerName = ucfirst($urlParts[0]);
         $filename = "../App/Controllers/" . $controllerName . ".php";
@@ -35,30 +30,25 @@ class App {
             return;
         }
 
-        self::$controller = $controllerName;
+        $this -> controller = $controllerName;
         unset($urlParts[0]);
 
         $method = $urlParts[1] ?? "index";
 
-        if ($method === "__construct" || !preg_match('/^[a-zA-Z0-9_]+$/', $method)) {
-            Response::error("BadRequest", 400);
-            return;
-        }
-
-        if (method_exists(self::$controller, $method)) {
-            self::$method = $method;
+        if (method_exists($this -> controller, $method)) {
+            $this -> method = $method;
             unset($urlParts[1]);
         } elseif (!empty($urlParts[1])) {
             Response::error("NotFound", 404);
             return;
         }
 
-        self::$params = array_values($urlParts);
+        $this -> params = array_values($urlParts);
 
-        $controllerInstance = new self::$controller(new Request(), self::$method);
+        $controllerInstance = new $this -> controller(new Request(), $this -> method);
 
         try {
-            call_user_func_array([$controllerInstance, self::$method], self::$params);
+            call_user_func_array([$controllerInstance, $this -> method], $this -> params);
         } catch (ArgumentCountError | TypeError) {
             Response::error("BadRequest", 400);
         }
