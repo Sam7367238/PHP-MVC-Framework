@@ -10,7 +10,7 @@
 
     <h3>User Form</h3>
 
-    <h3><?= $data["name"] ?? "Your Name" ?> | <?= $data["email"] ?? "Your Email" ?></h3>
+    <h3><?= $name ?? "Your Name" ?> | <?= $email ?? "Your Email" ?></h3>
 
     <form method="post">
         <input type="text" name="name" placeholder="Name">

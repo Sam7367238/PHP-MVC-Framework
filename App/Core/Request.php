@@ -21,16 +21,18 @@ class Request {
         return array_merge($files, $post);
     }
 
-    public function data($key, $post, $filterType) {
+    public function data($key, $requestType, $filterType) {
         if (!isset($this -> data[$key])) {
             return null;
         }
 
-        if (!$post) {
-            return $this -> data[$key];
-        }
+        switch ($requestType) {
+            case "POST": return filter_var($this -> data[$key], $filterType);
+            break;
 
-        return filter_var($this -> data[$key], $filterType);
+            case "FILE": return $this -> data[$key];
+            break;
+        }
     }
 
     public function query($key, $filterType) {
