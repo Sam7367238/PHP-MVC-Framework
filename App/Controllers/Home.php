@@ -15,10 +15,17 @@ class Home extends Controller {
         $data = [];
 
         if (Request::isPost()) {
-            $data["name"] = $this -> request -> data("name", true, FILTER_SANITIZE_SPECIAL_CHARS);
-            $data["email"] = $this -> request -> data("email", true, FILTER_SANITIZE_SPECIAL_CHARS);
+            $name = $this -> request -> data("name", "POST", FILTER_SANITIZE_SPECIAL_CHARS);
+            $email = $this -> request -> data("email", "POST", FILTER_SANITIZE_SPECIAL_CHARS);
+
+            if (empty($name) || empty($email)) {
+                $data["error"] = "All fields are required.";
+            } else {
+                $data["name"] = $name;
+                $data["email"] = $email;
+            }
         }
 
-        $this -> view("welcome", $data);
+        return $this -> view("welcome", $data);
     }
 }

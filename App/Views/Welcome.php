@@ -6,6 +6,10 @@
     <title>Home</title>
 </head>
 <body>
+    <?php if (isset($error)) : ?>
+        <p><?= $error ?></p>
+    <?php endif ?>
+
     <h1>Home</h1>
 
     <h3>User Form</h3>
