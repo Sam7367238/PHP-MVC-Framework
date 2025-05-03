@@ -21,7 +21,7 @@ class Request {
         return array_merge($files, $post);
     }
 
-    public function data($key, $post, $type = null) {
+    public function data($key, $post, $filterType) {
         if (!isset($this -> data[$key])) {
             return null;
         }
@@ -30,27 +30,15 @@ class Request {
             return $this -> data[$key];
         }
 
-        if ($type == "string") {
-            return filter_var($this -> data[$key], FILTER_SANITIZE_SPECIAL_CHARS);
-        }
-
-        if ($type == "int") {
-            return filter_var($this -> data[$key], FILTER_SANITIZE_NUMBER_INT);
-        }
+        return filter_var($this -> data[$key], $filterType);
     }
 
-    public function query($key, $type) {
+    public function query($key, $filterType) {
         if (!isset($this -> query[$key])) {
             return null;
         }
 
-        if ($type == "int") {
-            return filter_var($this -> query[$key], FILTER_SANITIZE_NUMBER_INT);
-        }
-
-        if ($type == "string") {
-            return filter_var($this -> query[$key], FILTER_SANITIZE_SPECIAL_CHARS);
-        }
+        return filter_var($this -> query[$key], $filterType);
     }
 
     public static function isPost() {
