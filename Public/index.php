@@ -2,5 +2,7 @@
 
 require("../App/Bootstrap.php");
 
+$app = new App();
+
 Session::init();
-App::run();
+$app -> run();
