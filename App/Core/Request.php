@@ -50,24 +50,24 @@ class Request {
     }
 
     public static function middleware($middleware) {
-        if (is_array($middleware)) {
-            foreach ($middleware as $m) {
-                $filePath = "../App/Middleware/" . $m . ".php";
-
-                if (!file_exists($filePath)) {
-                    return Response::error("InternalServer", 500);
-                }
-
-                require_once($filePath);
-
-                if (class_exists($m)) {
-                    new $m;
-                } else {
-                    return Response::error("InternalServer", 500);
-                }
-            }
-        } else {
+        if (!is_array($middleware)) {
             return Response::error("InternalServer", 500);
+        }
+        
+        foreach ($middleware as $m) {
+            $filePath = "../App/Middleware/" . $m . ".php";
+
+            if (!file_exists($filePath)) {
+                return Response::error("InternalServer", 500);
+            }
+
+            require_once($filePath);
+
+            if (!class_exists($m)) {
+                return Response::error("InternalServer", 500);
+            }
+
+            new $m;
         }
     }
 }
