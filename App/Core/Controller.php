@@ -3,7 +3,7 @@
 class Controller {
     protected $request;
 
-    public function __construct(?Request $request = null, $method = null, $middleware = []) {
+    public function __construct($request = null, $method = null, $middleware = []) {
         $this -> request = $request ?? new Request();
 
         if ($method) {

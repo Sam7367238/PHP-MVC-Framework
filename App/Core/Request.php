@@ -5,32 +5,23 @@ class Request {
     public $query = [];
 
     public function __construct() {
-        $this -> data = $this -> mergeData($_POST, $_FILES);
         $this -> query = $_GET;
     }
 
-    public function mergeData($post, $files) {
-        foreach ($post as $key => $value) {
-            if (is_string($value)) {
-                $post[$key] = trim($value);
-            }
-        }
-
-        return array_merge($files, $post);
-    }
-
-    public function data($key, $requestType, $filterType) {
-        if (!isset($this -> data[$key])) {
+    public function post($key, $filterType) {
+        if (!isset($_POST[$key])) {
             return null;
         }
 
-        switch ($requestType) {
-            case "POST": return filter_var($this -> data[$key], $filterType);
-            break;
+        return filter_var($_POST[$key], $filterType);
+    }
 
-            case "FILE": return $this -> data[$key];
-            break;
+    public function file($key) {
+        if (!isset($_FILES[$key])) {
+            return null;
         }
+
+        return $_FILES[$key];
     }
 
     public function query($key, $filterType) {

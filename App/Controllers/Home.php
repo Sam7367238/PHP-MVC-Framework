@@ -4,7 +4,7 @@ class Home extends Controller {
     private static $middleware = [];
     private $primaryModel;
 
-    public function __construct(?Request $request = null, $method = null) {
+    public function __construct($request = null, $method = null) {
         parent::__construct($request, $method, self::$middleware);
 
         // $this -> primaryModel = $this -> model();
@@ -14,8 +14,8 @@ class Home extends Controller {
         $data = [];
 
         if (Request::isPost()) {
-            $name = $this -> request -> data("name", "POST", FILTER_SANITIZE_SPECIAL_CHARS);
-            $email = $this -> request -> data("email", "POST", FILTER_SANITIZE_SPECIAL_CHARS);
+            $name = $this -> request -> post("name", FILTER_SANITIZE_SPECIAL_CHARS);
+            $email = $this -> request -> post("email", FILTER_SANITIZE_SPECIAL_CHARS);
 
             if (empty($name) || empty($email)) {
                 $data["error"] = "All fields are required.";
