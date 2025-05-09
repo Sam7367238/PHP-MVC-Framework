@@ -41,7 +41,7 @@ class CONTROLLER_NAME extends Controller {
     private static $middleware = [];
     private $primaryModel;
 
-    public function __construct(?Request $request = null, $method = null) {
+    public function __construct($request = null, $method = null) {
         parent::__construct($request, $method, self::$middleware);
 
         // $this -> primaryModel = $this -> model();
@@ -129,7 +129,7 @@ class Products {
     private static $middleware = [];
     private $primaryModel;
 
-    public function __construct(?Request $request = null, $method = null) {
+    public function __construct($request = null, $method = null) {
         parent::__construct($request, $method, self::$middleware);
 
         // $this -> primaryModel = $this -> model();
