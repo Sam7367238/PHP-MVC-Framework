@@ -18,11 +18,11 @@ class Response {
         exit();
     }
 
-    public static function redirect_to($location = '') {
+    public function redirect_to($location = '') {
         header("Location: " . baseUrl() . "/{$location}");
     }
 
-    public static function redirect_back() {
+    public function redirect_back() {
         if (isset($_SERVER["HTTP_REFERER"])) {
             header("Location: " . $_SERVER["HTTP_REFERER"]);
         } else {

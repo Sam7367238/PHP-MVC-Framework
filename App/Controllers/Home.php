@@ -4,8 +4,8 @@ class Home extends Controller {
     private static $middleware = [];
     private $primaryModel;
 
-    public function __construct($request = null, $method = null) {
-        parent::__construct($request, $method, self::$middleware);
+    public function __construct($container, $method = null) {
+        parent::__construct($container, $method, self::$middleware);
 
         // $this -> primaryModel = $this -> model();
     }
@@ -13,7 +13,7 @@ class Home extends Controller {
     public function index() {
         $data = [];
 
-        if (Request::isPost()) {
+        if ($this -> request -> isPost()) {
             $name = $this -> request -> post("name", FILTER_SANITIZE_SPECIAL_CHARS);
             $email = $this -> request -> post("email", FILTER_SANITIZE_SPECIAL_CHARS);
 

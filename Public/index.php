@@ -2,7 +2,6 @@
 
 require("../App/Bootstrap.php");
 
-$app = new App();
+$app = $container -> get(App::class);
 
-Session::init();
 $app -> run();

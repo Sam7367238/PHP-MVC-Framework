@@ -3,9 +3,11 @@
 class Request {
     public $data = [];
     public $query = [];
+    protected $response;
 
-    public function __construct() {
+    public function __construct($response) {
         $this -> query = $_GET;
+        $this -> response = $response;
     }
 
     public function post($key, $filterType) {
@@ -32,33 +34,39 @@ class Request {
         return filter_var($this -> query[$key], $filterType);
     }
 
-    public static function isPost() {
+    public function isPost() {
         return $_SERVER["REQUEST_METHOD"] === "POST";
     }
 
-    public static function isGet() {
+    public function isGet() {
         return $_SERVER["REQUEST_METHOD"] === "GET";
     }
 
-    public static function middleware($middleware) {
+    public function middleware($middleware) {
         if (!is_array($middleware)) {
-            return Response::error("InternalServer", 500);
+            return $this -> response -> error("InternalServer", 500);
         }
         
         foreach ($middleware as $m) {
             $filePath = "../App/Middleware/" . $m . ".php";
 
             if (!file_exists($filePath)) {
-                return Response::error("InternalServer", 500);
+                return $this -> response -> error("InternalServer", 500);
             }
 
             require_once($filePath);
 
             if (!class_exists($m)) {
-                return Response::error("InternalServer", 500);
+                return $this -> response -> error("InternalServer", 500);
             }
 
-            new $m;
+            $middlewareInstance = new $m($this -> response -> container ?? null);
+
+            if (!method_exists($middlewareInstance, "handle")) {
+                return $this -> response -> error("InternalServer", 500);
+            }
+            
+            $middlewareInstance -> handle();
         }
     }
 }

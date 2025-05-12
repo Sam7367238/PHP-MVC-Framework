@@ -1,9 +1,14 @@
 <?php
 
 class App {
+    private $container;
     public $controller = "Home";
     public $method = "index";
     public $params = [];
+
+    public function __construct($container) {
+        $this -> container = $container;
+    }
 
     public function splitURL()  {
         $url = $_GET["url"] ?? "home";
@@ -19,15 +24,13 @@ class App {
         $filename = "../App/Controllers/" . $controllerName . ".php";
 
         if (!file_exists($filename)) {
-            Response::error("NotFound", 404);
-            return;
+            return $this -> container -> get(Response::class) -> error("NotFound", 404);
         }
 
         require($filename);
 
         if (!class_exists($controllerName)) {
-            Response::error("NotFound", 404);
-            return;
+            return $this -> container -> get(Response::class) -> error("NotFound", 404);
         }
 
         $this -> controller = $controllerName;
@@ -39,13 +42,12 @@ class App {
             $this -> method = $method;
             unset($urlParts[1]);
         } elseif (!empty($urlParts[1])) {
-            Response::error("NotFound", 404);
-            return;
+            return $this -> container -> get(Response::class) -> error("NotFound", 404);
         }
 
         $this -> params = array_values($urlParts);
 
-        $controllerInstance = new $this -> controller(new Request(), $this -> method);
+        $controllerInstance = new $this -> controller($this -> container);
 
         try {
             call_user_func_array([$controllerInstance, $this -> method], $this -> params);

@@ -1,10 +1,13 @@
 <?php
 
 class Controller {
+    protected $container;
     protected $request;
 
-    public function __construct($request = null, $method = null, $middleware = []) {
-        $this -> request = $request ?? new Request();
+    public function __construct($container, $method = null, $middleware = []) {
+        $this -> container = $container;
+
+        $this -> request = $this -> container -> get(Request::class);
 
         if ($method) {
             $this -> middleware($method, $middleware);
@@ -31,16 +34,16 @@ class Controller {
             return new $model();
         }
 
-        return Response::error("InternalServer", 500);
+        return $this -> container -> get(Response::class) -> error("InternalServer", 500);
     }
 
     public function middleware($method, $middlewareMap) {
         if (!is_array($middlewareMap)) {
-            return Response::error("InternalServer", 500);
+            return $this -> container -> get(Response::class) -> error("InternalServer", 500);
         }
 
         if (isset($middlewareMap[$method])) {
-            return Request::middleware($middlewareMap[$method]);
+            return $this -> container -> get(Request::class) -> middleware($middlewareMap[$method]);
         }
     }
 }
